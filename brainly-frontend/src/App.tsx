@@ -1,4 +1,5 @@
 import { Button } from "./components/ui/Botton";
+import { PlusIcon } from "./icons/PlusIcon";
 
 export default function Home() {
   return (
@@ -6,7 +7,9 @@ export default function Home() {
     <h1 className="text-3xl font-bold underline bg-black text-white ">
       Hello world!
     </h1>
-    <Button variant="primary" size="lg" onClick={() => {}} text={"Yes Daddy"} />
+    <Button startIcon={<PlusIcon />} size="sm" variant="primary" onClick={() => {}} text={"Share"} />
+    <Button size="md" variant="secondary"  onClick={() => {}} text={"Add Content"} />
+
       </div>
   )
 }
