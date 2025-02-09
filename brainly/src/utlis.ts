@@ -8,3 +8,5 @@ export function random(len:number){
     }
     return ans; 
 }
+
+ const check = "true";
