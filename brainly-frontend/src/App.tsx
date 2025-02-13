@@ -1,15 +1,18 @@
 import { Button } from "./components/ui/Botton";
+import { Card } from "./components/ui/card";
 import { PlusIcon } from "./icons/PlusIcon";
+import { ShareIcon } from "./icons/shareIcon";
 
 export default function Home() {
   return (
     <div>
-    <h1 className="text-3xl font-bold underline bg-black text-white ">
-      Hello world!
-    </h1>
-    <Button startIcon={<PlusIcon />} size="sm" variant="primary" onClick={() => {}} text={"Share"} />
-    <Button size="md" variant="secondary"  onClick={() => {}} text={"Add Content"} />
 
+    
+    <div className="flex items-center justify-center">
+    <Button startIcon={<PlusIcon />}  variant="primary" size="sm"    text={"Add content"} ></Button>
+    <Button startIcon={<ShareIcon />} variant="secondary" size="sm"  text={"Share brain"} ></Button>
+      </div>
+      <Card />
       </div>
   )
 }

@@ -7,8 +7,6 @@ import { ReactElement } from "react";
     size: "sm" | "md" | "lg";
     text: string;
     startIcon?: ReactElement;
-    endIcon?:ReactElement;
-    onClick: () => void;
 }
 
 const variantStyles = {
@@ -17,17 +15,16 @@ const variantStyles = {
 }
 
 const sizeStyle = {
-    "sm" : "py-1 px-2",
+    "sm" : "py-1 px-1",
     "md" : "py-2 px-4",
     "lg" : "py-4 px-6"
 }
 
-const  defaultStyles = "rounded-md flex"
+const  defaultStyles = "flex rounded-md font-strong px-3 py-4  items-center"
 
 export const Button = (props : ButtonProps) =>{
     return <button className={`${variantStyles[props.variant]} ${defaultStyles} ${sizeStyle[props.size]}`}>
-                 {props.startIcon ? <div className="pr-2">{props.startIcon}</div> : null}{props.text}{props.endIcon}
+                 {props.startIcon}{props.text}
            </button>
 }
 
-<Button variant="primary" size="lg" onClick={() => {}} text={"Yes Daddy"} />
