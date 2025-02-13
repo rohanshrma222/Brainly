@@ -65,6 +65,7 @@ app.post("/api/v1/content", middleware_1.userMiddleware, (req, res) => __awaiter
     yield db_1.ContentModel.create({
         link,
         type,
+        title: req.body.title,
         //@ts-ignore 
         userId: req.userId,
         tags: []
@@ -73,7 +74,7 @@ app.post("/api/v1/content", middleware_1.userMiddleware, (req, res) => __awaiter
         message: "Content added"
     });
 }));
-app.get("api/v1/content", middleware_1.userMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.get("/api/v1/content", middleware_1.userMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     //@ts-ignore
     const userId = req.userId;
     const content = yield db_1.ContentModel.find({
@@ -83,7 +84,7 @@ app.get("api/v1/content", middleware_1.userMiddleware, (req, res) => __awaiter(v
         content
     });
 }));
-app.delete("api/v1/content", middleware_1.userMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.delete("/api/v1/content", middleware_1.userMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const contentId = req.body.contentId;
     yield db_1.ContentModel.deleteMany({
         contentId,
@@ -97,10 +98,14 @@ app.delete("api/v1/content", middleware_1.userMiddleware, (req, res) => __awaite
 app.post("/api/v1/brain/share", middleware_1.userMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const share = req.body.share;
     if (share) {
+        const hash = (0, utlis_1.random)(10);
         yield db_1.LinkModel.create({
             // @ts-ignore
             userId: req.userId,
-            hash: (0, utlis_1.random)(10)
+            hash: hash
+        });
+        res.json({
+            message: "/share/" + hash
         });
     }
     else {
@@ -108,11 +113,39 @@ app.post("/api/v1/brain/share", middleware_1.userMiddleware, (req, res) => __awa
             //@ts-ignore
             userId: req.userId,
         });
+        res.json({
+            message: "Removed Link"
+        });
+    }
+}));
+app.get("/api/v1/brain/:shareLink", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const hash = req.params.shareLink;
+    const link = db_1.LinkModel.findOne({
+        hash
+    });
+    if (!link) {
+        res.status(411).json({
+            message: "Sorry Incorrect input"
+        });
+        return;
+    }
+    const content = yield db_1.ContentModel.find({
+        //@ts-ignore
+        userId: link.userId
+    });
+    const user = yield db_1.UserModel.findOne({
+        //@ts-ignore
+        userId: link.userId
+    });
+    if (!user) {
+        res.status(411).json({
+            message: "user not found, error should ideally not happen"
+        });
+        return;
     }
     res.json({
-        message: "Updated sharable link"
+        username: user === null || user === void 0 ? void 0 : user.username,
+        content: content
     });
 }));
-app.get("/api/v1/brain/:shareLink", (req, res) => {
-});
 app.listen(3000);

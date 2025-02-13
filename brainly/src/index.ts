@@ -59,6 +59,7 @@ app.post("/api/v1/content",userMiddleware,async (req,res) =>{
     await ContentModel.create({
       link,
       type,
+      title:req.body.title,
       //@ts-ignore 
       userId: req.userId,
       tags:[]
@@ -69,7 +70,7 @@ app.post("/api/v1/content",userMiddleware,async (req,res) =>{
     })
 })
 
-app.get("api/v1/content",userMiddleware,async(req,res) =>{
+app.get("/api/v1/content",userMiddleware,async(req,res) =>{
   //@ts-ignore
   const userId = req.userId;
   const content = await ContentModel.find({
@@ -81,7 +82,7 @@ app.get("api/v1/content",userMiddleware,async(req,res) =>{
 
 })
 
-app.delete("api/v1/content",userMiddleware,async(req,res) =>{
+app.delete("/api/v1/content",userMiddleware,async(req,res) =>{
   const contentId = req.body.contentId;
 
   await ContentModel.deleteMany({
@@ -98,6 +99,17 @@ app.delete("api/v1/content",userMiddleware,async(req,res) =>{
 app.post("/api/v1/brain/share",userMiddleware,async(req,res) =>{ 
    const share = req.body.share;
    if(share){
+      const existingLink = await LinkModel.findOne({
+        //@ts-ignore
+        userId: req.userId
+      });
+
+      if(existingLink){
+        res.json({
+          hash: existingLink.hash
+        })
+        return ;
+      }
       const hash = random(10)
       await LinkModel.create({
         // @ts-ignore
@@ -105,7 +117,7 @@ app.post("/api/v1/brain/share",userMiddleware,async(req,res) =>{
         hash:hash
       })
       res.json({
-        message: "/share/" + hash
+          hash 
       })
    }
    else{
@@ -136,11 +148,13 @@ app.get("/api/v1/brain/:shareLink",async(req,res) =>{
     }
 
     const content = await ContentModel.find({
+      //@ts-ignore
       userId: link.userId
     })
 
     const user = await UserModel.findOne({
-      userId: link.userId
+      //@ts-ignore
+      _Id: link.userId
     })
 
     if(!user){

@@ -10,3 +10,4 @@ function random(len) {
     }
     return ans;
 }
+const check = "true";

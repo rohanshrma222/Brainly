@@ -10,7 +10,6 @@ const UserSchema = new Schema({
     password: String    
 });
 
-// Correct way to create a model using mongoose.model
 export const UserModel = mongoose.model("User", UserSchema);
 
 const TagSchema = new Schema({
