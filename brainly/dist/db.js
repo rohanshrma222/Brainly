@@ -45,7 +45,6 @@ const UserSchema = new mongoose_1.Schema({
     username: { type: String, unique: true },
     password: String
 });
-// Correct way to create a model using mongoose.model
 exports.UserModel = mongoose_1.default.model("User", UserSchema);
 const TagSchema = new mongoose_1.Schema({
     name: String

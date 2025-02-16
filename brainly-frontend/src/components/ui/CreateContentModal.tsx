@@ -1,14 +1,45 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { CrossIcon } from "../../icons/CrossIcon";
 import { Button } from "@/components/ui/button"
 import { Input } from "./input";
+import axios from "axios"
+import { BACKEND_URL } from "@/config";
 
-export function CreateContentModal({open,onClose}){
+interface CreateContentModalProps {
+    open: boolean;
+    onClose: () => void;
+}
 
-    const modalRef = useRef(null);
+export function CreateContentModal({ open, onClose }: CreateContentModalProps) {
 
-    const handleClickOutside = (e) => {
-        if (modalRef.current && !modalRef.current.contains(e.target)) {
+    enum ContentType {
+        Youtube = "youtube",
+        Twitter = "twitter"
+    }
+
+    const titleRef = useRef<HTMLInputElement>(null);
+    const linkRef = useRef<HTMLInputElement>(null);
+    const [type,setType]=useState(ContentType.Youtube)
+
+    async function addContent(){
+        const title = titleRef.current?.value;
+        const link = linkRef.current?.value;
+
+        await axios.post(`${BACKEND_URL}/api/v1/content`,{
+            link,
+            title,
+            type
+        },{
+            headers:{
+                "Authorization": localStorage.getItem("token")
+            }
+        })
+        onClose();
+    }
+
+    const modalRef = useRef<HTMLDivElement>(null);
+    const handleClickOutside = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
             onClose();
         }
     };
@@ -26,14 +57,27 @@ export function CreateContentModal({open,onClose}){
                            
                             <div className="mt-4 ">
                                 <div className="mb-3">
-                                     <Input placeholder={"Title"} />
+                                     <Input reference={titleRef} placeholder={"Title"} />
                                 </div>
                                 <div>
-                                     <Input placeholder={"Link"} />
+                                     <Input reference={linkRef} placeholder={"Link"} />
                                 </div> 
                             </div>
+                            <div>
+                                <div>
+                                    <h1>Type</h1>
+                                </div>
+                                <div className="flex justify-center gap-4">
+                                    <Button variant={type==ContentType.Youtube ? "default" : "secondary"} onClick={()=>{
+                                        setType(ContentType.Youtube)
+                                    }}>Youtube</Button>
+                                    <Button variant={type==ContentType.Twitter ? "default" : "secondary"} onClick={()=>{
+                                        setType(ContentType.Twitter)
+                                    }}>Twitter</Button>
+                                </div>
+                            </div>
                             <div className="flex justify-center mt-2">
-                            <Button variant="outline">Submit</Button>
+                            <Button onClick={addContent}variant="outline">Submit</Button>
                             </div>
                         </span>
                     </div>

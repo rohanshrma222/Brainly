@@ -18,8 +18,10 @@ const db_1 = require("./db");
 const config_1 = require("./config");
 const middleware_1 = require("./middleware");
 const utlis_1 = require("./utlis");
+const cors_1 = __importDefault(require("cors"));
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
+app.use((0, cors_1.default)());
 app.post("/api/v1/signup", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const username = req.body.username;
     const password = req.body.password;
@@ -61,7 +63,7 @@ app.post("/api/v1/signin", (req, res) => __awaiter(void 0, void 0, void 0, funct
 }));
 app.post("/api/v1/content", middleware_1.userMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const link = req.body.link;
-    const type = req.body.link;
+    const type = req.body.type;
     yield db_1.ContentModel.create({
         link,
         type,
@@ -98,6 +100,16 @@ app.delete("/api/v1/content", middleware_1.userMiddleware, (req, res) => __await
 app.post("/api/v1/brain/share", middleware_1.userMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const share = req.body.share;
     if (share) {
+        const existingLink = yield db_1.LinkModel.findOne({
+            //@ts-ignore
+            userId: req.userId
+        });
+        if (existingLink) {
+            res.json({
+                hash: existingLink.hash
+            });
+            return;
+        }
         const hash = (0, utlis_1.random)(10);
         yield db_1.LinkModel.create({
             // @ts-ignore
@@ -105,7 +117,7 @@ app.post("/api/v1/brain/share", middleware_1.userMiddleware, (req, res) => __awa
             hash: hash
         });
         res.json({
-            message: "/share/" + hash
+            hash
         });
     }
     else {
@@ -135,7 +147,7 @@ app.get("/api/v1/brain/:shareLink", (req, res) => __awaiter(void 0, void 0, void
     });
     const user = yield db_1.UserModel.findOne({
         //@ts-ignore
-        userId: link.userId
+        _Id: link.userId
     });
     if (!user) {
         res.status(411).json({
